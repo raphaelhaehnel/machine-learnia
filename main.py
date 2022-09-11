@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
+from sklearn.metrics import accuracy_score
 
 def initialization(X):
     W = np.random.randn(X.shape[1], 1)
@@ -33,8 +34,18 @@ def artificial_neuron(X, y, learning_rate = 0.1, n_iter = 100):
         Loss.append(log_loss(A, y))
         dW, db = gradients(A, X, y)
         W, b = update(dW, db, W, b, learning_rate)
+
+    y_pred = predict(X, W, b)
+    print(accuracy_score(y, y_pred))
+
     plt.plot(Loss)
     plt.show()
+    return (W, b)
+
+def predict(X, W, b):
+    A = model(X, W, b)
+    print(A)
+    return A >= 0.5
 
 if __name__ == "__main__":
 
@@ -44,4 +55,4 @@ if __name__ == "__main__":
     # plt.scatter(X[:, 0], X[:, 1], c=y, cmap='summer')
     # plt.show()
 
-    artificial_neuron(X, y)
+    W, b = artificial_neuron(X, y)
