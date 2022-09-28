@@ -124,24 +124,47 @@ class MultipleNeurals:
             print("The model has been already trained.")
             return
             
-        train_loss = []
-        history = []
+        self.train_acc = []
+        self.train_loss = []
+        self.accuracy_test = []
 
         for i in tqdm(range(n_iter)):
             activations = self.forward_propagation(self.X_train, self.parameters)
             gradients = self.back_propagation(self.X_train, self.y_train, activations, self.parameters)
             self.parameters = self.update(gradients, self.parameters, learning_rate)
 
-            if i % 10 == 0:
-                train_loss.append(self.log_loss(activations["A2"], self.y_train))
-                history.append([self.parameters, train_loss[int(i/10)]])
+            
+            if i % 2 == 0:
 
-        # plt.plot(Loss)
-        # plt.show()
-        y_pred = self.predict(self.X_train, self.parameters)
-        print("Accuracy score: ", accuracy_score(self.y_train.flatten(), y_pred.flatten()))
+                # Prediction in real time
+                y_pred_test = self.predict(self.X_test, self.parameters)
+                self.accuracy_test.append(accuracy_score(self.y_train.flatten(), y_pred_test.flatten()))
+
+                self.train_loss.append(self.log_loss(activations["A2"], self.y_train))
+                y_pred = self.predict(self.X_train, self.parameters)
+                current_accuracy = accuracy_score(self.y_train.flatten(), y_pred.flatten())
+                self.train_acc.append(current_accuracy)
 
         self.trained = True
+
+    def show_train_performance(self):
+        if not self.trained:
+            print("The model hasn't been trained yet.")
+            return
+
+        plt.figure(figsize=(14, 4))
+
+        plt.subplot(1, 2, 1)
+        plt.plot(self.train_loss, label='train loss')
+        plt.legend()
+
+        plt.subplot(1, 2, 2)
+        plt.plot(self.train_acc, label='train acc')
+        plt.plot(self.accuracy_test, label='test acc')
+        plt.legend()
+
+        plt.show()
+
 
     def predict(self, X, parameters):
         activations = self.forward_propagation(X, parameters)
@@ -158,7 +181,7 @@ class MultipleNeurals:
         plt.show()
 
     def show_test_set(self):
-        y_predict = self.predict(self.X_train, self.parameters)
+        y_predict = self.predict(self.X_test, self.parameters)
         for i in range(1,15):
             plt.subplot(4, 5, i)
             plt.imshow(self.X_train_original[i], cmap='gray')

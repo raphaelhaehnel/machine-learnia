@@ -21,11 +21,17 @@ if __name__ == "__main__":
     # # y_test.shape   (200, 1)
 
     X, y = make_circles(n_samples=100, noise=0.1, factor=0.3, random_state=0)
+    X_test, y_test = make_circles(n_samples=100, noise=0.1, factor=0.3, random_state=1)
+
     X = X.T
     y = y.reshape((1, y.shape[0]))
+
+    X_test = X_test.T
+    y_test = y_test.reshape((1, y_test.shape[0]))
 
     plt.scatter(X[0, :], X[1, :], c=y, cmap='summer', edgecolors='k')
     plt.show()
 
-    mulipleNeurals = MultipleNeurals(X, y, np.array([1]), np.array([1]), n1=2)
+    mulipleNeurals = MultipleNeurals(X, y, X_test, y_test, n1=2)
     mulipleNeurals.train(n_iter=10000)
+    mulipleNeurals.show_train_performance()
